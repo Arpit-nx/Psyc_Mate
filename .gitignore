@@ -1,0 +1,21 @@
+# Python environment
+venv/
+__pycache__/
+
+# Environment variables
+.env
+
+# VS Code settings (if using)
+.vscode/
+
+# PyCharm settings (if using)
+.idea/
+
+# Compiled files
+*.pyc
+*.pyo
+*.pyd
+
+# Logs and database files
+*.log
+*.sqlite3
