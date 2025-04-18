@@ -4,4 +4,4 @@ Flask-Bcrypt
 Flask-WTF
 Flask-Login
 flask-cors
-dotenv
+python-dotenv

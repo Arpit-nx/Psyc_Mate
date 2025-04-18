@@ -14,7 +14,7 @@ load_dotenv()
 
 def create_app():
     app = Flask(__name__)
-    CORS(app)
+    CORS(app, resources={r"/api/*": {"origins": "http://localhost:8080"}}, supports_credentials=True)
     app.config.from_object('config.Config')
 
     app.secret_key = app.config.get("SECRET_KEY", "default_secret_key")

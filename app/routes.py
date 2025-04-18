@@ -68,17 +68,22 @@ def signup():
 @routes.route("/api/login", methods=["POST"])
 def login():
     data = request.json
+    print("Received login data:", data)
+
+    if not data or not data.get("email") or not data.get("password"):
+        return jsonify({"error": "Missing email or password"}), 400
+
     user = User.get_by_email(data.get("email"))
-    
-    if user and bcrypt.check_password_hash(user.password, data.get("password")):
-        # Set user data in session
+    if not user:
+        return jsonify({"error": "Invalid email or password"}), 401
+
+    if bcrypt.check_password_hash(user.password, data.get("password")):
         session['user_id'] = str(user.id)
         session['email'] = user.email
-        session['name'] = user.name  # Assuming the name is stored in the User model
-        
-        # Log the user in using Flask-Login
+        session['name'] = user.name
+
         login_user(user)
-        
+
         return jsonify({
             "message": "Login successful",
             "user": {
@@ -87,7 +92,7 @@ def login():
                 "name": user.name,
             }
         })
-    
+
     return jsonify({"error": "Invalid email or password"}), 401
 
 @routes.route("/api/health", methods=["GET"])
