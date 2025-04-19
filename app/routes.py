@@ -95,6 +95,14 @@ def login():
 
     return jsonify({"error": "Invalid email or password"}), 401
 
+@routes.route('/api/therapists/find', methods=['POST'])
+def find_therapist():
+    data = request.get_json()
+    title = data.get('title')
+    print(f"User submitted: {title}")
+    # Here you'd process the title and query your therapist DB or logic
+    return jsonify({"message": f"We've received your input: {title}!"})
+
 @routes.route("/api/health", methods=["GET"])
 def health_check():
     return jsonify({"status": "ok"})

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import axios from "axios";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -9,14 +10,22 @@ const FindTherapist = () => {
     title: "",
   });
 
+  const [responseMessage, setResponseMessage] = useState("");
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("User input:", formData);
-    // TODO: call backend or display results
+    try {
+      const response = await axios.post("http://localhost:5000/api/therapists/find", formData);
+      console.log("Server response:", response.data);
+      setResponseMessage(response.data.message || "Therapist search submitted successfully!");
+    } catch (error) {
+      console.error("Error submitting data:", error);
+      setResponseMessage("Something went wrong. Please try again.");
+    }
   };
 
   return (
@@ -41,6 +50,9 @@ const FindTherapist = () => {
               Submit
             </Button>
           </form>
+          {responseMessage && (
+            <p className="text-center mt-4 text-gray-700">{responseMessage}</p>
+          )}
         </CardContent>
       </Card>
     </main>
