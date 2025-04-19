@@ -60,7 +60,7 @@ const Signup = () => {
         });
 
         // Redirect to the login page
-        navigate("/login"); // Use navigate to redirect
+        navigate("/"); // Use navigate to redirect
       } else {
         const errorData = await response.json();
         toast({

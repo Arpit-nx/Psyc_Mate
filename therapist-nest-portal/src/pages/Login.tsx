@@ -52,7 +52,7 @@ const Login = () => {
         });
 
         // Redirect to home page after successful login
-        navigate("/home");  // Replace "/home" with your actual home route
+        navigate("/dashboard");  // Replace "/home" with your actual home route
       }
     } catch (error) {
       console.error("Login error:", error);

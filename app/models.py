@@ -1,5 +1,5 @@
 from flask_login import UserMixin
-from app import mongo, login_manager
+from app import mongo, login_manager, bcrypt
 from bson.objectid import ObjectId
 
 @login_manager.user_loader
@@ -10,10 +10,11 @@ def load_user(user_id):
     return None
 
 class User(UserMixin):
-    def __init__(self, user_id, email, password):
+    def __init__(self, user_id, email, password, name=None):
         self.id = str(user_id)  # Convert to string here
         self.email = email
         self.password = password
+        self.name = name
 
     @staticmethod
     def get_by_email(email):
@@ -24,5 +25,7 @@ class User(UserMixin):
 
     @staticmethod
     def create(email, password):
-        user_id = mongo.db.users.insert_one({"email": email, "password": password}).inserted_id
-        return User(user_id, email, password)
+        hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+        user_id = mongo.db.users.insert_one({"email": email, "password": hashed_password}).inserted_id
+        return User(user_id, email, hashed_password)
+
