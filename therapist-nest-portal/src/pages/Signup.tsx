@@ -15,6 +15,9 @@ const signupSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters" }),
   email: z.string().email({ message: "Please enter a valid email address" }),
   password: z.string().min(8, { message: "Password must be at least 8 characters" }),
+  userType: z.enum(["patient", "intern", "licensed"], { 
+    required_error: "Please select a user type",
+  }),
   acceptTerms: z.boolean().refine((val) => val === true, {
     message: "You must accept the terms and conditions",
   }),
@@ -139,6 +142,27 @@ const Signup = () => {
                       <FormLabel>Password</FormLabel>
                       <FormControl>
                         <Input type="password" placeholder="••••••••" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="userType"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>User Type</FormLabel>
+                      <FormControl>
+                        <select
+                          {...field}
+                          className="w-full p-2 border rounded"
+                        >
+                          <option value="">Select user type</option>
+                          <option value="patient">Patient</option>
+                          <option value="intern">Intern Psychologist</option>
+                          <option value="licensed">Licensed Psychologist</option>
+                        </select>
                       </FormControl>
                       <FormMessage />
                     </FormItem>

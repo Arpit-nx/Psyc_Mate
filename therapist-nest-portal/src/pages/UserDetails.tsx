@@ -39,11 +39,25 @@ const UserDetails = () => {
   const onSubmit = async (values: UserDetailsFormValues) => {
     setIsLoading(true);
     try {
-      console.log("Form values:", values);
+      const response = await fetch("/api/intern-profile", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(values),
+      });
+      
+      if (!response.ok) {
+        throw new Error("Failed to save intern profile");
+      }
+  
+      const data = await response.json();
+      console.log("Saved profile:", data);
+  
       toast({
         title: "Details submitted!",
         description: "Your details have been successfully saved.",
       });
+  
       navigate("/dashboard");
     } catch (error) {
       console.error("Error:", error);
@@ -55,7 +69,7 @@ const UserDetails = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  };  
 
   return (
     <div className="container flex items-center justify-center min-h-screen py-10">
@@ -108,7 +122,7 @@ const UserDetails = () => {
                       <FormControl>
                         <div className="relative">
                           <Briefcase className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                          <Input className="pl-8" placeholder="Skills (e.g., JavaScript, React)" {...field} />
+                          <Input className="pl-8" placeholder="Skills (e.g., Counselling psychologist, Therapist)" {...field} />
                         </div>
                       </FormControl>
                       <FormMessage />

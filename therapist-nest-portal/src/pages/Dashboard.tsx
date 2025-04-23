@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Brain, Heart, Users, MessageCircle, BookOpen, Phone, Mail, MapPin, GraduationCap, Calendar } from "lucide-react";
+import { Brain, Heart, Users, MessageCircle, BookOpen, Phone, Mail, MapPin, Calendar } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
@@ -12,58 +12,55 @@ const Dashboard = () => {
     education: string;
     startDate: string;
     avatar: string;
+    skills: string[];
   } | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const mockUser = {
-      name: "Dr. Sarah Johnson",
-      email: "sarah.johnson@psychology.com",
-      phone: "+1 (555) 123-4567",
-      location: "New York City, NY",
-      education: "Ph.D. in Clinical Psychology",
-      startDate: "January 2024",
-      avatar: "/placeholder.svg"
+    const fetchUserData = async () => {
+      try {
+        const response = await fetch("/api/user", {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        console.log("Response:", response); // Debugging line
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch user data");
+        }
+
+        const data = await response.json();
+        setUser(data.user);
+      } catch (error) {
+        setError(error.message || "An error occurred while fetching user data");
+      } finally {
+        setIsLoading(false);
+      }
     };
-    setUser(mockUser);
+
+    fetchUserData();
   }, []);
 
-  const skills = [
-    {
-      name: "Cognitive Therapy",
-      description: "Expert in cognitive behavioral therapy techniques",
-      icon: Brain,
-      proficiency: "Advanced",
-      color: "bg-purple-100 text-purple-600"
-    },
-    {
-      name: "Emotional Support",
-      description: "Specialized in emotional counseling and support",
-      icon: Heart,
-      proficiency: "Expert",
-      color: "bg-pink-100 text-pink-600"
-    },
-    {
-      name: "Group Therapy",
-      description: "Experienced in facilitating group therapy sessions",
-      icon: Users,
-      proficiency: "Intermediate",
-      color: "bg-blue-100 text-blue-600"
-    },
-    {
-      name: "Crisis Intervention",
-      description: "Trained in emergency psychological interventions",
-      icon: MessageCircle,
-      proficiency: "Advanced",
-      color: "bg-green-100 text-green-600"
-    },
-    {
-      name: "Research & Assessment",
-      description: "Skilled in psychological assessment and research",
-      icon: BookOpen,
-      proficiency: "Expert",
-      color: "bg-amber-100 text-amber-600"
-    }
-  ];
+  // Skills data, you can dynamically replace these if needed
+  const skills = user?.skills.map((skill) => ({
+    name: skill,
+    description: `${skill} related description`, // Customize description based on skill
+    icon: Brain, // You may want to assign a specific icon based on the skill
+    proficiency: "Advanced", // This can be dynamic too, depending on your data structure
+    color: "bg-purple-100 text-purple-600" // You can assign a color to skills dynamically as well
+  })) || [];
+
+  if (isLoading) {
+    return <p className="text-lg text-gray-600 text-center">Loading user data...</p>;
+  }
+
+  if (error) {
+    return <p className="text-lg text-red-600 text-center">{error}</p>;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 p-8">
@@ -104,8 +101,8 @@ const Dashboard = () => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {skills.map((skill) => (
-                <Card key={skill.name} className="p-6 hover:shadow-lg transition-shadow">
+              {skills.map((skill, index) => (
+                <Card key={index} className="p-6 hover:shadow-lg transition-shadow">
                   <div className="flex items-start space-x-4">
                     <div className={`p-3 rounded-lg ${skill.color}`}>
                       <skill.icon size={24} />
@@ -129,7 +126,7 @@ const Dashboard = () => {
             </div>
           </>
         ) : (
-          <p className="text-lg text-gray-600 text-center">Loading user data...</p>
+          <p className="text-lg text-gray-600 text-center">No user data available.</p>
         )}
       </div>
     </div>

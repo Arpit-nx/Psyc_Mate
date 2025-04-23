@@ -14,6 +14,9 @@ import { MapPin } from "lucide-react";
 const loginSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address" }),
   password: z.string().min(6, { message: "Password must be at least 6 characters" }),
+  userType: z.enum(["patient", "intern", "licensed"], {
+    required_error: "Please select a user type"
+  }),
 });
 
 type LoginFormValues = z.infer<typeof loginSchema>;
@@ -38,6 +41,7 @@ const Login = () => {
       const response = await axios.post("http://127.0.0.1:5000/api/login", {
         email: values.email,
         password: values.password,
+        userType: values.userType
       });
 
       if (response.status === 200) {
@@ -52,7 +56,7 @@ const Login = () => {
         });
 
         // Redirect to home page after successful login
-        navigate("/");  // Replace "/home" with your actual home route
+        navigate("/dashboard");  // Replace "/home" with your actual home route
       }
     } catch (error) {
       console.error("Login error:", error);
@@ -111,6 +115,27 @@ const Login = () => {
                       <FormLabel>Password</FormLabel>
                       <FormControl>
                         <Input type="password" placeholder="••••••••" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="userType"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>User Type</FormLabel>
+                      <FormControl>
+                        <select
+                          {...field}
+                          className="w-full p-2 border rounded"
+                        >
+                          <option value="">Select user type</option>
+                          <option value="patient">Patient</option>
+                          <option value="intern">Intern Psychologist</option>
+                          <option value="licensed">Licensed Psychologist</option>
+                        </select>
                       </FormControl>
                       <FormMessage />
                     </FormItem>

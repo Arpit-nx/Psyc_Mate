@@ -385,7 +385,7 @@ const HowItWorks = () => {
               </Button>
             </Link>
             <Link to="/signup">
-              <Button size="lg" variant="outline" className="border-white text-white hover:bg-therapy-700">
+              <Button size="lg" variant="outline" className="border-white text-therapy-700 hover:bg-therapy-700">
                 Create an Account
               </Button>
             </Link>
