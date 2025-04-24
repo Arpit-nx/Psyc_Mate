@@ -148,11 +148,10 @@ def get_user():
         return jsonify({"error": "Not authenticated"}), 401
 
     email = session['email']
-    user_type = session.get('user_type')  # 'intern', 'licensed', etc.
+    user_type = session.get('user_type', 'intern')  # 'intern', 'licensed', etc.
     
     # Determine the correct collection to fetch the user data
-    collection_name = "intern_profiles"  # e.g., 'interns', 'licensed_psychologists'
-    collection = mongo.db[collection_name]
+    collection = mongo.db["intern_profiles"]  # Default to 'intern_profiles' for now
 
     # Fetch user data based on email
     user = collection.find_one({"email": email})
@@ -170,6 +169,7 @@ def get_user():
         "startDate": user.get("startDate", "Not available"),
         "avatar": user.get("avatar", "/default-avatar.svg"),
     }
+    print("User data fetched:", user_data)  # Debugging line
 
     return jsonify({"user": user_data})
 

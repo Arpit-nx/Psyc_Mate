@@ -19,19 +19,31 @@ mongo = PyMongo()
 def create_app():
     app = Flask(__name__)
 
-    # CORS config (allow frontend to send cookies)
-    CORS(app, resources={r"/api/*": {"origins": "http://localhost:8080"}}, supports_credentials=True)
+    # SESSION CONFIG (important for cookie-based auth to work properly)
+    app.config["SESSION_TYPE"] = "filesystem"
+    app.config["SESSION_PERMANENT"] = False
+    app.config["SESSION_USE_SIGNER"] = True
+    app.config["SESSION_COOKIE_NAME"] = "session"
+    app.config["SESSION_COOKIE_HTTPONLY"] = True
+    app.config["SESSION_COOKIE_SAMESITE"] = "Lax"  # Use "None" if you're on HTTPS and cross-domain
+    app.config["SESSION_COOKIE_SECURE"] = False  # Change to True if using HTTPS in prod
+    app.config["SECRET_KEY"] = os.getenv("SECRET_KEY", "default_secret_key")
 
-    # Load config
+    # Initialize Flask-Session
+    Session(app)
+
+    # CORS setup to allow cookies from frontend
+    CORS(
+        app,
+        resources={r"/api/*": {"origins": "http://localhost:8080"}},
+        supports_credentials=True
+    )
+
+    # Load additional config from config.py
     app.config.from_object('config.Config')
 
-    # Secret key
+    # Re-set secret_key in case it wasn't picked from .env
     app.secret_key = app.config.get("SECRET_KEY", "default_secret_key")
-
-    # ✅ Flask-Session setup
-    app.config['SESSION_TYPE'] = 'filesystem'  # For local dev
-    app.config['SESSION_PERMANENT'] = False
-    Session(app)
 
     # Initialize extensions
     bcrypt.init_app(app)
@@ -43,7 +55,6 @@ def create_app():
     mongo.db = mongo.cx[app.config["MONGO_DB_NAME"]]
 
     print("Using Database:", app.config["MONGO_DB_NAME"])
-    print("Connecting to MongoDB...")
     try:
         mongo.db.command('ping')
         print("MongoDB connected successfully.")
@@ -54,7 +65,7 @@ def create_app():
     from .routes import routes
     app.register_blueprint(routes)
 
-    # Debug URL map
+    # Show registered routes
     print(app.url_map)
 
     return app
